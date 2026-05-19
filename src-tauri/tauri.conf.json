@@ -1,0 +1,40 @@
+{
+  "package": {
+    "productName": "Feeder Machine HMI",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "bundle": {
+      "active": true,
+      "identifier": "com.feeder.machine.hmi",
+      "resources": [],
+      "targets": ["deb", "appimage"]
+    },
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "title": "Feeder Machine HMI",
+        "width": 1480,
+        "height": 930,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": true,
+        "alwaysOnTop": false
+      }
+    ],
+    "updater": {
+      "active": false
+    },
+    "allowlist": {
+      "all": false,
+      "dialog": {
+        "all": false
+      }
+    },
+    "embeddedServer": {
+      "active": true
+    }
+  }
+}

@@ -1,0 +1,7 @@
+[package]
+name = "feeder_machine_hmi"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tauri = { version = "2.11.0", features = ["api-all"] }
