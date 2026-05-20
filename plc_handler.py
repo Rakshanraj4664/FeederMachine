@@ -13,16 +13,15 @@ API_PORT = 8000
 UNIT_ID = 1
 TIMEOUT_SECONDS = 1.0
 
-# Register mappings for a real PLC system.
-# Adjust addresses to match the actual data interface of your controller.
-ADDR_GAP = 500
-ADDR_OFFSET = 501
-ADDR_ROLLER_SPEED = 1100
-ADDR_ROLLER_LOAD = 1110
-ADDR_ROLLER_STATUS = 1120
-ADDR_SENSOR_BASE = 1200
-ADDR_DIAGNOSTIC_BASE = 1300
-
+# ── Register Mapping ─────────────────────────────────────────────
+# Adjust these to match your PLC program
+ADDR_GAP = 500          # D500
+ADDR_OFFSET = 501       # D501
+ADDR_ROLLER_SPEED = 2   # D2, D3, D4, D5
+ADDR_ROLLER_LOAD = 6    # D6, D7, D8, D9 ← UPDATE WHEN YOU KNOW
+ADDR_ROLLER_STATUS = 10 # D10, D11, D12, D13 ← UPDATE WHEN YOU KNOW
+ADDR_SENSOR_BASE = 1200 # D1200-D1203
+ADDR_DIAGNOSTIC_BASE = 1300 # D1300-D1302
 
 class ModbusTcpClient:
     def __init__(self, host: str, port: int, timeout: float = TIMEOUT_SECONDS):
@@ -206,16 +205,25 @@ class PlcRequestHandler(BaseHTTPRequestHandler):
             speeds = client.read_holding_registers(ADDR_ROLLER_SPEED, 4)
             loads = client.read_holding_registers(ADDR_ROLLER_LOAD, 4)
             status_codes = client.read_holding_registers(ADDR_ROLLER_STATUS, 4)
+            
+            roller_names = [
+                'Infeed Roller',
+                'Tension Roller',
+                'Guide Roller',
+                'Outfeed Roller',
+            ]
+            status_map = {0: 'ok', 1: 'warning', 2: 'error'}
+
             rollers = []
-            for index in range(4):
-                status_map = {0: 'ok', 1: 'warning', 2: 'error'}
+            for i in range(4):
                 rollers.append({
-                    'id': f'RL-10{index + 1}',
-                    'name': ['Infeed Roller', 'Tension Roller', 'Guide Roller', 'Outfeed Roller'][index],
-                    'speed': speeds[index],
-                    'load': loads[index],
-                    'status': status_map.get(status_codes[index], 'warning'),
+                    'id': f'RL-{i + 1}',
+                    'name': roller_names[i],
+                    'speed': speeds[i],
+                    'load': loads[i],
+                    'status': status_map.get(status_codes[i], 'warning'),
                 })
+            
             self._send_json({'connected': True, 'rollers': rollers})
         except Exception as exc:
             self._send_json({'connected': False, 'error': str(exc), 'rollers': []}, status=500)
@@ -227,7 +235,8 @@ class PlcRequestHandler(BaseHTTPRequestHandler):
             return
         try:
             registers = client.read_holding_registers(ADDR_GAP, 2)
-            self._send_json({'connected': True, 'gap': registers[0], 'offset': struct.unpack('>h', struct.pack('>H', registers[1]))[0]})
+            offset_signed = struct.unpack('>h', struct.pack('>H', registers[1]))[0]
+            self._send_json({'connected': True, 'gap': registers[0], 'offset': offset_signed})
         except Exception as exc:
             self._send_json({'connected': False, 'error': str(exc), 'gap': 0, 'offset': 0}, status=500)
 

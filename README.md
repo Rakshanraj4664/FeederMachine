@@ -1,5 +1,3 @@
-# React + TypeScript + Vite
-
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
@@ -74,3 +72,4 @@ export default defineConfig([
 ])
 ```
 # FeederMachine
+python3 -m py_compile plc_handler.py                                                                                      u\
