@@ -144,6 +144,14 @@ export const WidthControlSection: React.FC = () => {
     []
   )
 
+  const syncPlcWidth = useCallback(
+    async (newGap: number, newOffset: number) => {
+      await writePlcValue(GAP_REGISTER, Math.round(newGap))
+      await writePlcValue(OFFSET_REGISTER, Math.round(newOffset))
+    },
+    [writePlcValue]
+  )
+
   // ── Trigger Animation ──
   const trigger = useCallback((action: string, dur = 300) => {
     setActiveAction(action)
@@ -180,9 +188,10 @@ export const WidthControlSection: React.FC = () => {
       trigger('expand')
       setLeftPlateOuter(newLeft)
       setRightPlateOuter(newRight)
-      const newInnerGap =
-        newRight - PLATE_WIDTH_MM - (newLeft + PLATE_WIDTH_MM)
-      writePlcValue(GAP_REGISTER, newInnerGap)
+      const newInnerGap = newRight - PLATE_WIDTH_MM - (newLeft + PLATE_WIDTH_MM)
+      const newCenter = (newLeft + newRight) / 2
+      const newOffset = newCenter - railMidpoint
+      syncPlcWidth(newInnerGap, newOffset)
     }
   }, [
     leftPlateOuter,
@@ -217,9 +226,10 @@ export const WidthControlSection: React.FC = () => {
     trigger('contract')
     setLeftPlateOuter(newLeft)
     setRightPlateOuter(newRight)
-    const newInnerGap =
-      newRight - PLATE_WIDTH_MM - (newLeft + PLATE_WIDTH_MM)
-    writePlcValue(GAP_REGISTER, newInnerGap)
+    const newInnerGap = newRight - PLATE_WIDTH_MM - (newLeft + PLATE_WIDTH_MM)
+    const newCenter = (newLeft + newRight) / 2
+    const newOffset = newCenter - railMidpoint
+    syncPlcWidth(newInnerGap, newOffset)
   }, [
     leftPlateOuter,
     rightPlateOuter,
@@ -239,7 +249,8 @@ export const WidthControlSection: React.FC = () => {
       trigger('moveLeft')
       setLeftPlateOuter(newLeft)
       setRightPlateOuter(newRight)
-      writePlcValue(GAP_REGISTER, innerGap)
+      const newOffset = ((newLeft + newRight) / 2) - railMidpoint
+      syncPlcWidth(innerGap, newOffset)
     }
   }, [leftPlateOuter, rightPlateOuter, innerGap, moveStep, trigger, writePlcValue])
 
@@ -253,7 +264,8 @@ export const WidthControlSection: React.FC = () => {
       trigger('moveRight')
       setLeftPlateOuter(newLeft)
       setRightPlateOuter(newRight)
-      writePlcValue(GAP_REGISTER, innerGap)
+      const newOffset = ((newLeft + newRight) / 2) - railMidpoint
+      syncPlcWidth(innerGap, newOffset)
     }
   }, [leftPlateOuter, rightPlateOuter, innerGap, moveStep, trigger, writePlcValue])
 
@@ -265,7 +277,8 @@ export const WidthControlSection: React.FC = () => {
     const defaultRight = defaultLeft + totalSpan
     setLeftPlateOuter(defaultLeft)
     setRightPlateOuter(defaultRight)
-  }, [trigger])
+    syncPlcWidth(MIN_GAP_MM, 0)
+  }, [trigger, syncPlcWidth])
 
   // ── Direct Input Setters ──
   const setGapDirect = useCallback(
