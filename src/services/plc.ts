@@ -28,13 +28,25 @@ export type PLCWidthState = {
   offset: number
 }
 
-async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(path, init)
-  if (!response.ok) {
-    const errorBody = await response.text()
-    throw new Error(`PLC fetch failed: ${response.status} ${response.statusText} ${errorBody}`)
+async function fetchJson<T>(path: string, init?: RequestInit, timeoutMs = 500): Promise<T> {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    const response = await fetch(path, {
+      ...init,
+      signal: controller.signal,
+    })
+    clearTimeout(timeoutId)
+    if (!response.ok) {
+      const errorBody = await response.text()
+      throw new Error(`PLC fetch failed: ${response.status} ${response.statusText} ${errorBody}`)
+    }
+    return response.json()
+  } catch (error) {
+    clearTimeout(timeoutId)
+    throw error
   }
-  return response.json()
 }
 
 export async function getPlcStatus(): Promise<PLCStatus> {

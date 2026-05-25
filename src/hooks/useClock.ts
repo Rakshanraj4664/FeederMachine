@@ -20,7 +20,7 @@ export default function useClock() {
       setDateTime(
         now.toLocaleString('en-US', {
           weekday: 'short',
-          month: 'short',
+          month: 'short',//Write failed — check PLC connection
           day: 'numeric',
           hour: '2-digit',
           minute: '2-digit',

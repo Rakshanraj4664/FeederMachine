@@ -2,12 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import MainLayout from './layouts/MainLayout';
 
-// Lazy load sections to isolate errors
-const HeaderSection = React.lazy(() => import('./sections/HeaderSection').then(m => ({ default: m.HeaderSection })));
-const WidthControlSection = React.lazy(() => import('./sections/WidthControlSection').then(m => ({ default: m.WidthControlSection })));
-const RollerStatusSection = React.lazy(() => import('./sections/RollerStatusSection').then(m => ({ default: m.RollerStatusSection })));
-const DiagnosticsSection = React.lazy(() => import('./sections/DiagnosticsSection').then(m => ({ default: m.DiagnosticsSection })));
-const SettingsSection = React.lazy(() => import('./sections/SettingsSection').then(m => ({ default: m.SettingsSection })));
+import { HeaderSection } from './sections/HeaderSection';
+import { WidthControlSection } from './sections/WidthControlSection';
+import { RollerStatusSection } from './sections/RollerStatusSection';
+import { DiagnosticsSection } from './sections/DiagnosticsSection';
+import { SettingsSection } from './sections/SettingsSection';
 
 // Simple error boundary
 class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, error: string}> {
@@ -31,58 +30,49 @@ class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasErr
   }
 }
 
-// Loading fallback
-const SectionLoader = () => (
-  <div className="w-full h-32 flex items-center justify-center">
-    <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
-  </div>
-);
-
 const App: React.FC = () => {
   return (
     <MainLayout>
       <ErrorBoundary>
-        <React.Suspense fallback={<SectionLoader />}>
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
-          >
-            <HeaderSection />
-          </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+        >
+          <HeaderSection />
+        </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
-          >
-            <WidthControlSection />
-          </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.05, ease: 'easeOut' }}
+        >
+          <WidthControlSection />
+        </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
-          >
-            <RollerStatusSection />
-          </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
+        >
+          <RollerStatusSection />
+        </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
-          >
-            <DiagnosticsSection />
-          </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.15, ease: 'easeOut' }}
+        >
+          <DiagnosticsSection />
+        </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4, ease: 'easeOut' }}
-          >
-            <SettingsSection />
-          </motion.div>
-        </React.Suspense>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2, ease: 'easeOut' }}
+        >
+          <SettingsSection />
+        </motion.div>
       </ErrorBoundary>
     </MainLayout>
   );

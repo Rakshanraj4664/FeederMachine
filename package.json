@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "dev:tauri": "tauri dev",
+    "dev": "vite --port 5173",
+    "dev:tauri": "env -u GTK_EXE_PREFIX -u GTK_PATH -u GIO_MODULE_DIR -u GTK_IM_MODULE_FILE -u GSETTINGS_SCHEMA_DIR -u XDG_DATA_DIRS -u XDG_DATA_HOME -u GDK_BACKEND tauri dev",
     "build": "tsc -b && vite build",
     "build:tauri": "tauri build",
     "lint": "eslint .",

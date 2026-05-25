@@ -1,15 +1,14 @@
 {
-  "package": {
-    "productName": "Feeder Machine HMI",
-    "version": "0.1.0"
+  "productName": "Feeder Machine HMI",
+  "version": "0.1.0",
+  "identifier": "com.feeder.machine.hmi",
+  "build": {
+    "beforeBuildCommand": "",
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://127.0.0.1:5173",
+    "frontendDist": "../dist"
   },
-  "tauri": {
-    "bundle": {
-      "active": true,
-      "identifier": "com.feeder.machine.hmi",
-      "resources": [],
-      "targets": ["deb", "appimage"]
-    },
+  "app": {
     "security": {
       "csp": null
     },
@@ -23,18 +22,12 @@
         "decorations": true,
         "alwaysOnTop": false
       }
-    ],
-    "updater": {
-      "active": false
-    },
-    "allowlist": {
-      "all": false,
-      "dialog": {
-        "all": false
-      }
-    },
-    "embeddedServer": {
-      "active": true
-    }
-  }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["deb", "appimage"],
+    "resources": []
+  },
+  "plugins": {}
 }

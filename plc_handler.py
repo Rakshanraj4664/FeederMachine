@@ -55,9 +55,9 @@ class ModbusTcpClient:
 
     def is_connected(self) -> bool:
         try:
-            with socket.create_connection((self.host, self.port), timeout=self.timeout):
-                return True
-        except (OSError, socket.timeout):
+            registers = self.read_holding_registers(ADDR_GAP, 1)
+            return len(registers) == 1
+        except (OSError, socket.timeout, ConnectionError, ValueError):
             return False
 
     def read_holding_registers(self, address: int, count: int) -> list[int]:

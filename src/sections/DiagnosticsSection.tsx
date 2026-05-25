@@ -64,15 +64,19 @@ export const DiagnosticsSection: React.FC = () => {
   const [loading,      setLoading]      = useState(false)
   const [lastFetched,  setLastFetched]  = useState<string | null>(null)
 
-  // ── Fetch from PLC ────────────────────────────────────────────
+  // ── Fetch from PLC with timeout ──────────────────────────────
   const load = useCallback(async () => {
     setLoading(true)
 
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 500)
+
       const [sensorRes, diagRes] = await Promise.all([
-        fetch(`${API_BASE}/api/plc/sensors`),
-        fetch(`${API_BASE}/api/plc/diagnostics`),
+        fetch(`${API_BASE}/api/plc/sensors`, { signal: controller.signal }),
+        fetch(`${API_BASE}/api/plc/diagnostics`, { signal: controller.signal }),
       ])
+      clearTimeout(timeoutId)
 
       const sensorJson = await sensorRes.json()
       const diagJson   = await diagRes.json()
@@ -105,9 +109,16 @@ export const DiagnosticsSection: React.FC = () => {
     setLoading(false)
   }, [])
 
-  // ── Fetch once on mount ───────────────────────────────────────
+  // ── Defer fetch to after initial render ──────────────────────
   useEffect(() => {
-    load()
+    let active = true
+    const timer = setTimeout(() => {
+      if (active) load()
+    }, 300)
+    return () => {
+      active = false
+      clearTimeout(timer)
+    }
   }, [load])
 
   return (
