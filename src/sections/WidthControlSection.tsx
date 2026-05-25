@@ -18,6 +18,7 @@ import { SectionTitle } from '../components/SectionTitle'
 import type { PLCRollerState } from '../services/plc'
 import { getPlcRollers, writePlcRegister, getPlcWidth, writePlcRegister as writePlcRegisterBase } from '../services/plc'
 
+
 // ═══════════════════════════════════════════════════════════════
 // PHYSICAL CONSTANTS — All in millimeters
 // ═══════════════════════════════════════════════════════════════
