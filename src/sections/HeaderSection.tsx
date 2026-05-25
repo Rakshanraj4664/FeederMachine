@@ -20,11 +20,11 @@ export const HeaderSection: React.FC = () => {
 
   useEffect(() => {
     let active = true;
-    
+
     // Defer PLC status check to after initial render (300ms delay)
     const initialDelay = setTimeout(() => {
       if (!active) return;
-      
+
       const refresh = async () => {
         const status = await getPlcStatus();
         if (active) setPlcStatus(status);
@@ -34,7 +34,7 @@ export const HeaderSection: React.FC = () => {
       const interval = setInterval(() => {
         if (active) refresh();
       }, 2000);
-      
+
       return () => clearInterval(interval);
     }, 300);
 

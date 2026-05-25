@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "description": "Authorized devices for FX-9000 Feeder Machine",
+  "devices": [
+    {
+      "mac": "D8:F8:83:A6:4F:DC",
+      "uuid": "03000200-0400-0500-0006-000700080009",
+      "description": "Main Control PC"
+    }
+  ]
+}

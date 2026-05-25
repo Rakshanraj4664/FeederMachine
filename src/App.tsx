@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import MainLayout from './layouts/MainLayout';
 
@@ -7,10 +7,12 @@ import { WidthControlSection } from './sections/WidthControlSection';
 import { RollerStatusSection } from './sections/RollerStatusSection';
 import { DiagnosticsSection } from './sections/DiagnosticsSection';
 import { SettingsSection } from './sections/SettingsSection';
+import { MachineLockScreen } from './components/MachineLockScreen';
+import { type AuthState } from './services/plc';
 
 // Simple error boundary
-class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, error: string}> {
-  constructor(props: {children: React.ReactNode}) {
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean, error: string }> {
+  constructor(props: { children: React.ReactNode }) {
     super(props);
     this.state = { hasError: false, error: '' };
   }
@@ -31,6 +33,21 @@ class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasErr
 }
 
 const App: React.FC = () => {
+  const [unauthReason, setUnauthReason] = useState<AuthState | null>(null);
+
+  useEffect(() => {
+    const handleAuthFailure = (e: Event) => {
+      const customEvent = e as CustomEvent<AuthState>;
+      setUnauthReason(customEvent.detail || 'UNAUTHORIZED');
+    };
+    window.addEventListener('machine-unauthorized', handleAuthFailure);
+    return () => window.removeEventListener('machine-unauthorized', handleAuthFailure);
+  }, []);
+
+  if (unauthReason) {
+    return <MachineLockScreen state={unauthReason} />;
+  }
+
   return (
     <MainLayout>
       <ErrorBoundary>

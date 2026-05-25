@@ -1,11 +1,13 @@
 const API_BASE = 'http://127.0.0.1:8000/api/plc'
-
+const AUTH_API_BASE = 'http://127.0.0.1:8000/api/auth'
 export type PLCStatus = {
   connected: boolean
   host: string
   port: number
   latency_ms: number | null
 }
+
+export type AuthState = 'CHECKING' | 'AUTHORIZED' | 'UNAUTHORIZED' | 'SERVER_UNAVAILABLE' | 'HEARTBEAT_LOST';
 
 export type PLCSensorReading = {
   label: string
@@ -40,6 +42,11 @@ async function fetchJson<T>(path: string, init?: RequestInit, timeoutMs = 500): 
     clearTimeout(timeoutId)
     if (!response.ok) {
       const errorBody = await response.text()
+      if (response.status === 403 && errorBody.includes('"authorized": false')) {
+        let stateObj: any = {};
+        try { stateObj = JSON.parse(errorBody); } catch(e) {}
+        window.dispatchEvent(new CustomEvent('machine-unauthorized', { detail: stateObj.state || 'UNAUTHORIZED' }))
+      }
       throw new Error(`PLC fetch failed: ${response.status} ${response.statusText} ${errorBody}`)
     }
     return response.json()
@@ -59,6 +66,15 @@ export async function getPlcStatus(): Promise<PLCStatus> {
       port: 502,
       latency_ms: null,
     }
+  }
+}
+
+export async function getAuthStatus(): Promise<AuthState> {
+  try {
+    const res = await fetchJson<{ state: AuthState }>(`${AUTH_API_BASE}/status`, undefined, 1000)
+    return res.state;
+  } catch {
+    return 'SERVER_UNAVAILABLE';
   }
 }
 

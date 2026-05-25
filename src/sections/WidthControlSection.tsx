@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { motion, useSpring, animate, AnimatePresence } from 'framer-motion'
-import {
+  import {
   Minus,
   Plus,
   Settings,
